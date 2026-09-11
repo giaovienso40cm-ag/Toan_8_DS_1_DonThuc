@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#050816">
+    <title>BÀI TẬP TRẮC NGHIỆM TOÁN 8 </title>
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$']], processEscapes: true },
+            options: { ignoreHtmlClass: 'tex2jax_ignore', processHtmlClass: 'tex2jax_process' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    
+<style>
+    :root {
+        --bg-1: #050816;
+        --bg-2: #0b1228;
+        --panel: rgba(15, 23, 42, 0.82);
+        --panel-2: rgba(30, 41, 59, 0.72);
+        --text: #f8fafc;
+        --muted: #cbd5e1;
+        --cyan: #22d3ee;
+        --blue: #60a5fa;
+        --violet: #a78bfa;
+        --pink: #f472b6;
+        --yellow: #facc15;
+        --green: #34d399;
+        --red: #fb7185;
+        --orange: #fb923c;
+        --border: rgba(148, 163, 184, 0.26);
+        --shadow: 0 18px 50px rgba(0, 0, 0, 0.42);
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        color: var(--text);
+        font-family: "Segoe UI", "Inter", Arial, sans-serif;
+        font-size: 150%;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-x: hidden;
+        background:
+            radial-gradient(circle at 12% 18%, rgba(34, 211, 238, 0.18), transparent 25%),
+            radial-gradient(circle at 88% 15%, rgba(167, 139, 250, 0.20), transparent 28%),
+            radial-gradient(circle at 78% 82%, rgba(244, 114, 182, 0.16), transparent 24%),
+            linear-gradient(145deg, var(--bg-1) 0%, #071126 48%, var(--bg-2) 100%);
+        background-attachment: fixed;
+    }
+
+    body::before,
+    body::after {
+        content: "";
+        position: fixed;
+        z-index: -1;
+        border-radius: 50%;
+        filter: blur(18px);
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
+    body::before {
+        width: 260px;
+        height: 260px;
+        top: 12%;
+        left: -90px;
+        background: linear-gradient(135deg, rgba(34,211,238,.22), rgba(96,165,250,.08));
+    }
+
+    body::after {
+        width: 330px;
+        height: 330px;
+        right: -120px;
+        bottom: 4%;
+        background: linear-gradient(135deg, rgba(244,114,182,.18), rgba(167,139,250,.18));
+    }
+
+    .header-fixed {
+        position: sticky;
+        top: 0;
+        width: 100%;
+        z-index: 1000;
+        text-align: center;
+        padding: 14px 14px 10px;
+        text-transform: uppercase;
+        font-weight: 900;
+        letter-spacing: 0.8px;
+        color: #ffffff;
+        background:
+            linear-gradient(90deg, rgba(8,15,35,.96), rgba(24,33,65,.96), rgba(8,15,35,.96));
+        border-bottom: 1px solid rgba(96, 165, 250, 0.35);
+        box-shadow: 0 8px 30px rgba(0,0,0,.35);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+    }
+
+    .header-fixed::after {
+        content: "";
+        position: absolute;
+        left: 12%;
+        right: 12%;
+        bottom: -2px;
+        height: 3px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--cyan), var(--blue), var(--violet), var(--pink), var(--yellow));
+        box-shadow: 0 0 18px rgba(96,165,250,.6);
+    }
+
+    .info-bar {
+        width: min(960px, 94%);
+        margin: 8px auto 0;
+        padding: 8px 14px;
+        font-size: 0.68em;
+        text-transform: none;
+        font-weight: 700;
+        letter-spacing: 0;
+        color: #e2e8f0;
+        background: rgba(15, 23, 42, 0.65);
+        border: 1px solid rgba(34, 211, 238, 0.28);
+        border-radius: 999px;
+        box-shadow: inset 0 0 20px rgba(34,211,238,.05);
+    }
+
+    #quiz-app {
+        width: 95%;
+        max-width: 920px;
+        padding: 26px 18px 44px;
+        box-sizing: border-box;
+    }
+
+    .screen { display: none; }
+    .active {
+        display: block;
+        animation: fadeUp .45s ease both;
+    }
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(14px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .welcome-box,
+    #quiz-screen {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        border-radius: 26px;
+        background:
+            linear-gradient(145deg, rgba(15,23,42,.88), rgba(17,28,54,.72));
+        box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,.05);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+    }
+
+    .welcome-box {
+        padding: 36px;
+        text-align: center;
+        margin-top: 26px;
+    }
+
+    .welcome-box::before,
+    #quiz-screen::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        padding: 1px;
+        border-radius: inherit;
+        background: linear-gradient(135deg, rgba(34,211,238,.65), rgba(167,139,250,.32), rgba(244,114,182,.52));
+        -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+    }
+
+    .welcome-box h2,
+    #result-screen h2 {
+        margin-top: 0;
+        color: transparent !important;
+        background: linear-gradient(90deg, var(--cyan), var(--yellow), var(--pink));
+        -webkit-background-clip: text;
+        background-clip: text;
+        text-shadow: none;
+        letter-spacing: 0.5px;
+    }
+
+    label {
+        display: block;
+        margin-top: 12px;
+        color: #e2e8f0;
+        font-weight: 700;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        padding: 15px 16px;
+        margin: 9px 0 14px;
+        font-size: 1.05rem;
+        color: #f8fafc;
+        background: rgba(2, 6, 23, 0.66);
+        border: 1px solid rgba(96,165,250,.34);
+        border-radius: 14px;
+        outline: none;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,.02);
+        transition: .25s ease;
+    }
+
+    input[type="text"]::placeholder {
+        color: #64748b;
+    }
+
+    input[type="text"]:focus {
+        border-color: var(--cyan);
+        box-shadow: 0 0 0 4px rgba(34,211,238,.12), 0 0 24px rgba(34,211,238,.12);
+        transform: translateY(-1px);
+    }
+
+    #quiz-screen {
+        padding: 28px;
+        margin-top: 22px;
+    }
+
+    #q-text {
+        position: relative;
+        margin-bottom: 22px !important;
+        padding: 18px 20px;
+        border-radius: 18px;
+        color: #ffffff;
+        background:
+            linear-gradient(135deg, rgba(59,130,246,.18), rgba(139,92,246,.12));
+        border: 1px solid rgba(96,165,250,.28);
+        box-shadow: inset 0 0 28px rgba(96,165,250,.05);
+        line-height: 1.55;
+
+        /* Biểu tượng và nội dung câu hỏi nằm cùng một hàng */
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    /* Thẻ p do JavaScript tạo không chiếm một dòng riêng */
+    #q-text > p {
+        margin: 0;
+        flex: 1;
+        min-width: 0;
+    }
+
+    #q-text::before {
+        content: "✦";
+        display: grid;
+        place-items: center;
+        width: 52px;
+        height: 52px;
+        min-width: 52px;
+        flex: 0 0 52px;
+        margin-right: 0;
+        border-radius: 14px;
+        color: #08111f;
+        background: linear-gradient(135deg, var(--cyan), var(--yellow));
+        box-shadow: 0 0 20px rgba(34,211,238,.22);
+    }
+
+    .option {
+        position: relative;
+        overflow: hidden;
+        padding: 15px 20px;
+        margin: 14px 0;
+        border-radius: 16px;
+        cursor: pointer;
+        transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease, background .22s ease;
+        background: rgba(15, 23, 42, 0.72);
+        border: 1px solid rgba(148, 163, 184, 0.28);
+        display: flex;
+        align-items: center;
+        min-height: 64px;
+        box-shadow: 0 8px 24px rgba(0,0,0,.12);
+    }
+
+    .option::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 5px;
+        border-radius: 16px 0 0 16px;
+        background: var(--blue);
+    }
+
+    .option:nth-child(1)::after { background: var(--cyan); }
+    .option:nth-child(2)::after { background: var(--violet); }
+    .option:nth-child(3)::after { background: var(--pink); }
+    .option:nth-child(4)::after { background: var(--orange); }
+
+    .option:nth-child(1) strong { color: var(--cyan); }
+    .option:nth-child(2) strong { color: var(--violet); }
+    .option:nth-child(3) strong { color: var(--pink); }
+    .option:nth-child(4) strong { color: var(--orange); }
+
+    .option:hover {
+        transform: translateY(-2px) scale(1.012);
+        background: rgba(30, 41, 59, 0.88);
+        border-color: rgba(125, 211, 252, 0.55);
+        box-shadow: 0 12px 34px rgba(0,0,0,.22), 0 0 22px rgba(96,165,250,.10);
+    }
+
+    .correct {
+        background: linear-gradient(135deg, rgba(16,185,129,.28), rgba(5,150,105,.18)) !important;
+        border-color: rgba(52,211,153,.85) !important;
+        box-shadow: 0 0 24px rgba(52,211,153,.20) !important;
+    }
+
+    .wrong {
+        background: linear-gradient(135deg, rgba(244,63,94,.30), rgba(190,24,93,.16)) !important;
+        border-color: rgba(251,113,133,.90) !important;
+        box-shadow: 0 0 24px rgba(251,113,133,.18) !important;
+    }
+
+    .correct::after { background: var(--green) !important; }
+    .wrong::after { background: var(--red) !important; }
+
+    table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: 20px 0;
+        font-size: 0.88em;
+        overflow: hidden;
+        border-radius: 16px;
+        background: rgba(15, 23, 42, .72);
+        border: 1px solid rgba(148,163,184,.25);
+    }
+
+    th, td {
+        padding: 12px;
+        text-align: center;
+        border-right: 1px solid rgba(148,163,184,.16);
+        border-bottom: 1px solid rgba(148,163,184,.16);
+    }
+
+    th {
+        color: #08111f;
+        background: linear-gradient(90deg, var(--cyan), #93c5fd);
+        font-weight: 800;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    td:last-child, th:last-child { border-right: none; }
+
+    .explanation {
+        position: relative;
+        display: none;
+        margin-top: 20px;
+        padding: 20px 20px 20px 24px;
+        color: #e2e8f0;
+        background: linear-gradient(135deg, rgba(15,23,42,.94), rgba(30,41,59,.86));
+        border: 1px solid rgba(250,204,21,.34);
+        border-left: 6px solid var(--yellow);
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,.18), 0 0 18px rgba(250,204,21,.07);
+        line-height: 1.55;
+    }
+
+    .explanation strong {
+        color: var(--yellow);
+    }
+
+    .btn-main {
+        width: fit-content;
+        min-width: 210px;
+        padding: 14px 28px;
+        margin: 22px auto;
+        display: block;
+        border: 1px solid rgba(255,255,255,.16);
+        border-radius: 15px;
+        color: #07111f;
+        background: linear-gradient(90deg, var(--cyan), #93c5fd, var(--violet));
+        font-size: 1.08rem;
+        font-weight: 900;
+        letter-spacing: .2px;
+        cursor: pointer;
+        box-shadow: 0 10px 28px rgba(59,130,246,.24), inset 0 1px 0 rgba(255,255,255,.55);
+        transition: transform .22s ease, box-shadow .22s ease, filter .22s ease;
+    }
+
+    .btn-main:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 14px 34px rgba(96,165,250,.30), 0 0 20px rgba(167,139,250,.18);
+        filter: brightness(1.06);
+    }
+
+    .btn-main:active {
+        transform: translateY(0) scale(.99);
+    }
+
+    #btn-next {
+        background: linear-gradient(90deg, var(--yellow), var(--orange), var(--pink));
+        color: #111827;
+    }
+
+    #submit-btn {
+        background: linear-gradient(90deg, var(--green), var(--cyan));
+        color: #05251d;
+    }
+
+    #result-screen .btn-main:nth-of-type(2) {
+        background: linear-gradient(90deg, #94a3b8, #cbd5e1) !important;
+        color: #0f172a !important;
+    }
+
+    #final-score {
+        display: inline-block;
+        min-width: 180px;
+        padding: 14px 22px;
+        border-radius: 18px;
+        color: var(--yellow);
+        background: rgba(250,204,21,.08);
+        border: 1px solid rgba(250,204,21,.28);
+        box-shadow: 0 0 26px rgba(250,204,21,.08);
+        font-weight: 900;
+    }
+
+    #thanks-container {
+        color: var(--green) !important;
+    }
+
+    #status-text {
+        color: var(--cyan);
+    }
+
+    #music-btn {
+        position: fixed;
+        right: 22px;
+        bottom: 22px;
+        z-index: 2000;
+        width: 58px;
+        height: 58px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(255,255,255,.22);
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1.45rem;
+        color: #08111f;
+        background: linear-gradient(135deg, var(--yellow), var(--pink));
+        box-shadow: 0 12px 28px rgba(0,0,0,.34), 0 0 18px rgba(244,114,182,.22);
+        transition: transform .22s ease, box-shadow .22s ease;
+    }
+
+    #music-btn:hover {
+        transform: scale(1.08) rotate(4deg);
+        box-shadow: 0 14px 32px rgba(0,0,0,.38), 0 0 26px rgba(250,204,21,.22);
+    }
+
+    svg {
+        display: block;
+        margin: 20px auto;
+        max-width: 100%;
+        filter: drop-shadow(0 8px 18px rgba(0,0,0,.25));
+    }
+
+    mjx-container {
+        color: #ffffff;
+    }
+
+
+    /* Tạo khoảng thở giữa văn bản và công thức Toán nội dòng */
+    #q-text mjx-container:not([display="true"]),
+    .option mjx-container:not([display="true"]),
+    .explanation mjx-container:not([display="true"]),
+    .welcome-box mjx-container:not([display="true"]) {
+        margin-left: 0.16em !important;
+        margin-right: 0.16em !important;
+    }
+
+    @media (max-width: 680px) {
+        body {
+            font-size: 122%;
+        }
+
+        .header-fixed {
+            padding: 11px 8px 8px;
+            font-size: .96em;
+        }
+
+        .info-bar {
+            width: 96%;
+            font-size: .62em;
+            line-height: 1.4;
+            border-radius: 14px;
+        }
+
+        #quiz-app {
+            width: 100%;
+            padding: 14px 10px 34px;
+        }
+
+        .welcome-box,
+        #quiz-screen {
+            border-radius: 20px;
+        }
+
+        .welcome-box {
+            padding: 24px 18px;
+        }
+
+        #quiz-screen {
+            padding: 18px 13px;
+        }
+
+        #q-text {
+            padding: 15px;
+            border-radius: 15px;
+            gap: 10px;
+        }
+
+        #q-text::before {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            flex-basis: 40px;
+            border-radius: 11px;
+        }
+
+        .option {
+            padding: 14px 14px 14px 18px;
+            min-height: 58px;
+            border-radius: 14px;
+        }
+
+        .btn-main {
+            width: 100%;
+            min-width: 0;
+            max-width: 420px;
+            font-size: 1rem;
+        }
+
+        table {
+            font-size: .78em;
+        }
+
+        th, td {
+            padding: 9px 6px;
+        }
+
+        #music-btn {
+            width: 52px;
+            height: 52px;
+            right: 14px;
+            bottom: 14px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: .01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: .01ms !important;
+            scroll-behavior: auto !important;
+        }
+    }
+</style>
+
+</head>
+<body>
+
+<div class="header-fixed">
+    Bài 1. Đơn thức
+    <div id="student-header" class="info-bar">
+        [Học sinh]. [Lớp]. [Điểm: 0]. [Lần làm lại: 0]
+    </div>
+</div>
+
+<button id="music-btn" onclick="toggleMusic()">🎵</button>
+
+<div id="quiz-app">
+    <div id="start-screen" class="screen active">
+        <div class="welcome-box">
+            <h2 style="color: var(--gold);">CỐ GẮNG LÀM BÀI EM NHÉ !.</h2>
+            <div style="text-align: left;">
+                <label>Họ và tên học sinh:</label>
+                <input type="text" id="name-input" placeholder="Nhập họ tên...">
+                <label>Lớp:</label>
+                <input type="text" id="class-input" placeholder="Ví dụ: 8A1">
+            </div>
+            <button class="btn-main" onclick="startQuiz()">BẮT ĐẦU LÀM BÀI</button>
+        </div>
+    </div>
+
+    <div id="quiz-screen" class="screen">
+        <div id="q-text" style="font-weight: bold; margin-bottom: 20px;"></div>
+        <div id="q-media"></div>
+        <div id="options-area"></div>
+        <div id="explain-box" class="explanation"></div>
+        <button id="btn-next" class="btn-main" style="display:none; margin-top:20px;" onclick="goNext()">CÂU TIẾP THEO</button>
+    </div>
+
+    <div id="result-screen" class="screen">
+        <div class="welcome-box">
+            <h2 style="color: var(--gold);">KẾT QUẢ BÀI LÀM</h2>
+            <p id="final-score" style="font-size: 2rem;"></p>
+            <p id="final-time" style="font-size: 1.05rem; color: var(--cyan); font-weight: 800;"></p>
+            <div id="thanks-container" style="margin: 20px 0; font-weight: bold; color: var(--gold);"></div>
+            <button id="submit-btn" class="btn-main" onclick="submitScore()">NỘP BÀI LÊN HỆ THỐNG</button>
+            <button class="btn-main" style="background:#b0bec5; margin-top:15px;" onclick="restartAll()">LÀM LẠI TOÀN BÀI</button>
+            <p id="status-text" style="margin-top:20px; font-size: 0.8em;"></p>
+        </div>
+    </div>
+</div>
+
+<audio id="bg-music" loop><source src="nhac-nen.mp3" type="audio/mpeg"></audio>
+<audio id="snd-correct" preload="auto"><source src="dung.mp3" type="audio/mpeg"></audio>
+<audio id="snd-wrong" preload="auto"><source src="sai.mp3" type="audio/mpeg"></audio>
+
+<script>
+    // GIÁO VIÊN DÁN LINK APPS SCRIPT VÀO ĐÂY
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyGapM53nCtU78VxGNrs811D3xEVwOvS0op_OPdUCvhBV1YLLgf2Ly__xNAbXyOaWx0/exec";
+
+    // Cơ sở dữ liệu 30 câu hỏi (Khôi phục từ file Word)
+    const DB = [
+    
+  
+  {
+    q: "Câu 1: Trong các biểu thức sau, biểu thức nào là đơn thức?",
+    a: [
+      "$(1+x)y^2$",
+      "$\\dfrac{x^2}{y}$",
+      "$(3+\\sqrt{3})xy$",
+      "$2\\sqrt{xy}$"
+    ],
+    c: 2,
+    e: "$(3+\\sqrt{3})xy$ là đơn thức vì $3+\\sqrt{3}$ là một số và các biến $x, y$ có số mũ nguyên không âm."
+  },
+
+  {
+    q: "Câu 2: Trong các biểu thức sau, biểu thức nào KHÔNG phải là đơn thức?",
+    a: [
+      "$-x$",
+      "$0$",
+      "$(3+\\sqrt{3})xy$",
+      "$(1+x)y^2$"
+    ],
+    c: 3,
+    e: "$(1+x)y^2$ không phải là đơn thức vì có chứa tổng $1+x$."
+  },
+
+  // ===== BÀI 1.2: THU GỌN ĐƠN THỨ - HỆ SỐ - PHẦN BIẾN - BẬC =====
+  {
+    q: "Câu 3: Thu gọn đơn thức $A=4x(-2)x^2y$, ta được:",
+    a: [
+      "$-8x^2y$",
+      "$8x^3y$",
+      "$-8x^3y$",
+      "$-6x^3y$"
+    ],
+    c: 2,
+    e: "$A=4\\cdot(-2)\\cdot x\\cdot x^2\\cdot y=-8x^3y$."
+  },
+
+  {
+    q: "Câu 4: Thu gọn $C=(1+2\\cdot4,5)x^2y\\cdot\\dfrac{1}{5}y^3$. Bậc của đơn thức thu được là:",
+    a: [
+      "$4$",
+      "$5$",
+      "$6$",
+      "$7$"
+    ],
+    c: 2,
+    e: "$1+2\\cdot4,5=10$, nên $C=10\\cdot\\dfrac15x^2y^4=2x^2y^4$. Bậc của đơn thức là $2+4=6$."
+  },
+
+  // ===== BÀI 1.3: THU GỌN VÀ TÍNH GIÁ TRỊ ĐƠN THỨ =====
+  {
+    q: "Câu 5: Thu gọn đơn thức $A=(-2)x^2y\\cdot\\dfrac12xy$, ta được:",
+    a: [
+      "$-x^3y^2$",
+      "$-x^2y^2$",
+      "$x^3y^2$",
+      "$-2x^3y^2$"
+    ],
+    c: 0,
+    e: "$(-2)\\cdot\\dfrac12=-1$, $x^2\\cdot x=x^3$ và $y\\cdot y=y^2$, nên $A=-x^3y^2$."
+  },
+
+  {
+    q: "Câu 6: Cho $B=xyz(-0,5)y^2z$. Giá trị của $B$ tại $x=4$, $y=0,5$, $z=2$ là:",
+    a: [
+      "$-4$",
+      "$-2$",
+      "$-1$",
+      "$1$"
+    ],
+    c: 2,
+    e: "$B=-0,5xy^3z^2$. Thay $x=4$, $y=0,5$, $z=2$ ta có $B=-0,5\\cdot4\\cdot(0,5)^3\\cdot2^2=-1$."
+  },
+
+  // ===== BÀI 1.4: ĐƠN THỨ ĐỒNG DẠNG =====
+  {
+    q: "Câu 7: Cặp đơn thức nào sau đây đồng dạng với nhau?",
+    a: [
+      "$3x^3y^2$ và $7x^3y^2$",
+      "$3x^3y^2$ và $-0,2x^2y^3$",
+      "$-4y$ và $\\dfrac34x^2y^3$",
+      "$7x^3y^2$ và $y\\sqrt2$"
+    ],
+    c: 0,
+    e: "Hai đơn thức đồng dạng khi có cùng phần biến. $3x^3y^2$ và $7x^3y^2$ đều có phần biến $x^3y^2$."
+  },
+
+  {
+    q: "Câu 8: Đơn thức nào đồng dạng với $-0,2x^2y^3$?",
+    a: [
+      "$3x^3y^2$",
+      "$\\dfrac34x^2y^3$",
+      "$-4y$",
+      "$7x^3y^2$"
+    ],
+    c: 1,
+    e: "$-0,2x^2y^3$ và $\\dfrac34x^2y^3$ có cùng phần biến $x^2y^3$, nên chúng là hai đơn thức đồng dạng."
+  },
+
+  // ===== BÀI 1.5: CỘNG, TRỪ ĐƠN THỨ ĐỒNG DẠNG =====
+  {
+    q: "Câu 9: Rút gọn $S=\\dfrac12x^2y^5-\\dfrac52x^2y^5$, ta được:",
+    a: [
+      "$-2x^2y^5$",
+      "$2x^2y^5$",
+      "$-3x^2y^5$",
+      "$-2x^4y^{10}$"
+    ],
+    c: 0,
+    e: "Hai đơn thức đồng dạng nên ta trừ các hệ số: $\\dfrac12-\\dfrac52=-2$. Do đó $S=-2x^2y^5$."
+  },
+
+  {
+    q: "Câu 10: Giá trị của $S=\\dfrac12x^2y^5-\\dfrac52x^2y^5$ tại $x=-2$, $y=1$ là:",
+    a: [
+      "$-4$",
+      "$-8$",
+      "$4$",
+      "$8$"
+    ],
+    c: 1,
+    e: "$S=-2x^2y^5$. Thay $x=-2$, $y=1$ ta được $S=-2\\cdot(-2)^2\\cdot1^5=-8$."
+  },
+
+  // ===== BÀI 1.6: TỔNG CÁC ĐƠN THỨ ĐỒNG DẠNG =====
+  {
+    q: "Câu 11: Tổng của bốn đơn thức $2x^2y^3$; $-\\dfrac35x^2y^3$; $-14x^2y^3$; $\\dfrac85x^2y^3$ là:",
+    a: [
+      "$-10x^2y^3$",
+      "$-11x^2y^3$",
+      "$11x^2y^3$",
+      "$-12x^2y^3$"
+    ],
+    c: 1,
+    e: "Cộng các hệ số: $2-\\dfrac35-14+\\dfrac85=2+1-14=-11$. Vậy tổng là $-11x^2y^3$."
+  },
+
+  {
+    q: "Câu 12: Hệ số của tổng $2x^2y^3-\\dfrac35x^2y^3-14x^2y^3+\\dfrac85x^2y^3$ là:",
+    a: [
+      "$-11$",
+      "$-12$",
+      "$11$",
+      "$-\\dfrac{11}{5}$"
+    ],
+    c: 0,
+    e: "Ta có $2-\\dfrac35-14+\\dfrac85=2+\\dfrac55-14=3-14=-11$."
+  }
+];
+
+    let current = 0, earnedUnits = 0, retry = 0;
+    let sName = "", sClass = "";
+    let quizInProgress = false;
+    let leaveWarningPending = false;
+
+    // ===== THỜI GIAN LÀM BÀI =====
+    let quizStartTime = null;
+    let quizEndTime = null;
+    let timerInterval = null;
+
+    function getElapsedSeconds() {
+        if (!quizStartTime) return 0;
+        const end = quizEndTime || Date.now();
+        return Math.max(0, Math.floor((end - quizStartTime) / 1000));
+    }
+
+    function formatDurationClock(totalSeconds) {
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        if (hours > 0) {
+            return String(hours).padStart(2, "0") + ":" +
+                   String(minutes).padStart(2, "0") + ":" +
+                   String(seconds).padStart(2, "0");
+        }
+
+        return String(minutes).padStart(2, "0") + ":" +
+               String(seconds).padStart(2, "0");
+    }
+
+    function formatDurationText(totalSeconds) {
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        const parts = [];
+        if (hours > 0) parts.push(hours + " giờ");
+        if (minutes > 0) parts.push(minutes + " phút");
+        parts.push(seconds + " giây");
+        return parts.join(" ");
+    }
+
+    function startTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(updateHeader, 1000);
+    }
+
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+
+    // Mỗi câu trắc nghiệm tương ứng 1 đơn vị điểm.
+    // Điểm toàn bài luôn được quy đổi chính xác về thang 10.
+    function getScore() {
+        const raw = (earnedUnits / DB.length) * 10;
+        return Math.min(10, Math.round(raw * 10) / 10);
+    }
+
+    // Hàm phát âm thanh chuẩn
+    function playSnd(id) {
+        const s = document.getElementById(id);
+        if (s) { s.currentTime = 0; s.play().catch(e => console.log(e)); }
+    }
+
+    function toggleMusic() {
+        const m = document.getElementById('bg-music');
+        const b = document.getElementById('music-btn');
+        if (m.paused) { m.play(); b.innerText = "🔇"; }
+        else { m.pause(); b.innerText = "🎵"; }
+    }
+
+    function startQuiz() {
+        sName = document.getElementById('name-input').value.trim();
+        sClass = document.getElementById('class-input').value.trim();
+        if(!sName || !sClass) return alert("Em nhập tên và lớp nhé!");
+        document.getElementById('bg-music').play().catch(() => {});
+        quizInProgress = true;
+        leaveWarningPending = false;
+        quizStartTime = Date.now();
+        quizEndTime = null;
+        startTimer();
+        updateHeader();
+        document.getElementById('start-screen').classList.remove('active');
+        document.getElementById('quiz-screen').classList.add('active');
+        renderQuestion();
+    }
+
+    function updateHeader() {
+        document.getElementById('student-header').innerText =
+            `${sName}. Lớp: ${sClass}. Điểm: ${getScore()}. Thời gian: ${formatDurationClock(getElapsedSeconds())}. Lần làm lại: ${retry}`;
+    }
+
+       // Vẽ hình SVG chuẩn nét trắng
+        function drawSVG(type) {
+        if(type === "bisector") {
+            return `<svg width="350" height="250" viewBox="0 0 350 250">
+                <path d="M150 40 L40 200 L310 200 Z" fill="none" stroke="white" stroke-width="3"/>
+                <line x1="150" y1="40" x2="164" y2="200" stroke="white" stroke-width="3"/>
+                <path d="M 132 65 A 30 30 0 0 0 172 63" fill="none" stroke="white" stroke-width="2"/>
+                <text x="145" y="30" fill="white">A</text><text x="25" y="215" fill="white">B</text>
+                <text x="315" y="215" fill="white">C</text><text x="160" y="220" fill="white">D</text>
+                <text x="50" y="120" fill="white">5cm</text><text x="250" y="120" fill="white">8cm</text>
+                <text x="80" y="220" fill="white">7cm</text><text x="220" y="220" fill="yellow">x</text>
+            </svg>`;
+        }
+        if(type === "thales") {
+            return `<svg width="300" height="200" viewBox="0 0 300 200">
+                <path d="M150 20 L50 180 L250 180 Z" fill="none" stroke="white" stroke-width="3"/>
+                <line x1="100" y1="100" x2="200" y2="100" stroke="white" stroke-width="3"/>
+                <text x="145" y="15" fill="white">A</text><text x="35" y="195" fill="white">B</text>
+                <text x="255" y="195" fill="white">C</text><text x="75" y="105" fill="white">D</text>
+                <text x="210" y="105" fill="white">E</text>
+            </svg>`;
+        }
+ if(type === "midsegment") {
+            return `<svg width="300" height="200" viewBox="0 0 300 200">
+                <path d="M150 20 L50 180 L250 180 Z" fill="none" stroke="white" stroke-width="3"/>
+                <line x1="100" y1="100" x2="200" y2="100" stroke="white" stroke-width="3"/>
+                <text x="145" y="15" fill="white">A</text><text x="35" y="195" fill="white">B</text>
+                <text x="255" y="195" fill="white">C</text><text x="75" y="105" fill="white">M</text>
+                <text x="210" y="105" fill="white">N</text><text x="138" y="95" fill="yellow">3cm</text>
+            </svg>`;
+}
+if(type === "midsegments") {
+            return `<svg width="300" height="200" viewBox="0 0 300 200">
+                <path d="M150 20 L50 180 L250 180 Z" fill="none" stroke="white" stroke-width="3"/>
+                <line x1="100" y1="100" x2="200" y2="100" stroke="white" stroke-width="3"/>
+                <text x="145" y="15" fill="white">A</text><text x="35" y="195" fill="white">B</text>
+                <text x="255" y="195" fill="white">C</text><text x="75" y="105" fill="white">M</text>
+                <text x="210" y="105" fill="white">N</text><text x="138" y="95" fill="yellow">4dm</text>
+            </svg>`;
+        }
+        return "";
+    }
+    function renderQuestion() {
+        const item = DB[current];
+        const opts = document.getElementById('options-area');
+        document.getElementById('btn-next').style.display = 'none';
+        document.getElementById('explain-box').style.display = 'none';
+        
+        let html = `<p>${item.q}</p>`;
+        if(item.img) html += drawSVG(item.img);
+        if(item.hasTable) html += `<table><tr><td>Xếp loại</td><td>Tốt</td><td>Khá</td><td>Đạt</td><td>Chưa đạt</td></tr><tr><td>Tỉ lệ</td><td>5%</td><td>45%</td><td>44%</td><td>6%</td></tr></table>`;
+        
+        document.getElementById('q-text').innerHTML = html;
+        opts.innerHTML = "";
+
+        if(item.isTF) {
+            let table = `<table><tr><th>Nội dung</th><th>Đúng</th><th>Sai</th></tr>`;
+            item.sub.forEach((text, i) => {
+                table += `<tr data-row="${i}"><td>${text}</td>
+                <td style="cursor:pointer" onclick="checkTF(${i}, true, this)">Đ</td>
+                <td style="cursor:pointer" onclick="checkTF(${i}, false, this)">S</td></tr>`;
+            });
+            opts.innerHTML = table + "</table>";
+        } else {
+            const labels = ['A','B','C','D'];
+            item.a.forEach((text, i) => {
+                const d = document.createElement('div');
+                d.className = 'option';
+                d.innerHTML = `<strong>${labels[i]}.</strong> &nbsp; ${text}`;
+                d.onclick = () => checkMC(i, d);
+                opts.appendChild(d);
+            });
+        }
+        MathJax.typesetPromise();
+    }
+
+    function checkMC(idx, el) {
+        const item = DB[current];
+        const all = document.querySelectorAll('.option');
+        all.forEach(o => o.onclick = null);
+        if(idx === item.c) {
+            el.classList.add('correct'); playSnd('snd-correct'); earnedUnits += 1;
+        } else {
+            el.classList.add('wrong'); all[item.c].classList.add('correct'); playSnd('snd-wrong');
+            const box = document.getElementById('explain-box');
+            box.innerHTML = `<strong>Giải thích:</strong> ${item.e}`;
+            box.style.display = 'block';
+        }
+        updateHeader();
+        document.getElementById('btn-next').style.display = 'block';
+        MathJax.typesetPromise();
+    }
+
+    function checkTF(rowIdx, choice, el) {
+        const item = DB[current];
+        const row = document.querySelector(`tr[data-row="${rowIdx}"]`);
+        if(row.getAttribute('data-ans')) return;
+        row.setAttribute('data-ans', 'true');
+
+        const correct = (choice === item.ans[rowIdx]);
+        el.style.backgroundColor = correct ? "#2e7d32" : "#c62828";
+        if(correct) { playSnd('snd-correct'); earnedUnits += (1 / item.sub.length); }
+        else { playSnd('snd-wrong'); }
+        
+        updateHeader();
+
+        if(document.querySelectorAll('tr[data-ans="true"]').length === item.sub.length) {
+            document.getElementById('explain-box').innerHTML = `<strong>Giải thích:</strong> ${item.e}`;
+            document.getElementById('explain-box').style.display = 'block';
+            document.getElementById('btn-next').style.display = 'block';
+            MathJax.typesetPromise();
+        }
+    }
+
+    function goNext() {
+        current++;
+        if(current < DB.length) renderQuestion();
+        else {
+            quizEndTime = Date.now();
+            stopTimer();
+            quizInProgress = false;
+            leaveWarningPending = false;
+            document.getElementById('quiz-screen').classList.remove('active');
+            document.getElementById('result-screen').classList.add('active');
+            document.getElementById('final-score').innerText = `Điểm: ${getScore()} / 10`;
+            document.getElementById('final-time').innerText =
+                `⏱ Thời gian làm bài: ${formatDurationText(getElapsedSeconds())}`;
+        }
+    }
+
+    function submitScore() {
+        const status = document.getElementById('status-text');
+        if(SCRIPT_URL.includes("DÁN_LINK")) return alert("Chưa có link gửi điểm!");
+        
+        status.innerText = "Đang gửi...";
+        const payload = {
+    name: sName,
+    class: sClass, 
+    score: getScore(),
+    attempts: retry,
+    duration: formatDurationText(getElapsedSeconds()),
+    durationSeconds: getElapsedSeconds(),
+    quizId: "1_DonThuc"};
+
+        fetch(SCRIPT_URL, {
+            method: 'POST', mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).then(() => {
+            status.innerText = "";
+            document.getElementById('thanks-container').innerText = "Em làm tốt lắm. Thầy/Cô đã nhận được bài của em";
+            document.getElementById('submit-btn').style.display = 'none';
+        }).catch(() => status.innerText = "Lỗi khi nộp bài!");
+    }
+
+
+    // ===== CẢNH BÁO KHI RỜI KHỎI MÀN HÌNH LÀM BÀI =====
+    // Khi đóng trang, tải lại hoặc chuyển sang địa chỉ khác:
+    window.addEventListener("beforeunload", function (event) {
+        if (!quizInProgress) return;
+        event.preventDefault();
+        event.returnValue = "";
+    });
+
+    // Khi học sinh chuyển tab, thu nhỏ trình duyệt hoặc chuyển sang ứng dụng khác:
+    document.addEventListener("visibilitychange", function () {
+        if (!quizInProgress) return;
+
+        if (document.hidden) {
+            leaveWarningPending = true;
+        } else if (leaveWarningPending) {
+            leaveWarningPending = false;
+            setTimeout(function () {
+                alert("⚠️ CẢNH BÁO: Em vừa rời khỏi màn hình làm bài. Hãy tập trung hoàn thành bài trước khi chuyển sang trang hoặc ứng dụng khác.");
+            }, 120);
+        }
+    });
+
+    function restartAll() {
+        current = 0; earnedUnits = 0; retry++;
+        quizInProgress = true;
+        leaveWarningPending = false;
+        quizStartTime = Date.now();
+        quizEndTime = null;
+        startTimer();
+        updateHeader();
+        document.getElementById('result-screen').classList.remove('active');
+        document.getElementById('quiz-screen').classList.add('active');
+        document.getElementById('thanks-container').innerText = "";
+        renderQuestion();
+    }
+</script>
+</body>
+</html>
