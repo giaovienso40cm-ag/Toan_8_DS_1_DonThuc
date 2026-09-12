@@ -415,6 +415,15 @@
         color: #05251d;
     }
 
+    /* Khóa nút ngay sau lần nhấn đầu tiên để tránh nộp trùng */
+    #submit-btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.62;
+        transform: none !important;
+        filter: grayscale(.15);
+        box-shadow: none;
+    }
+
     #result-screen .btn-main:nth-of-type(2) {
         background: linear-gradient(90deg, #94a3b8, #cbd5e1) !important;
         color: #0f172a !important;
@@ -788,6 +797,10 @@
     let quizInProgress = false;
     let leaveWarningPending = false;
 
+    // ===== CHỐNG NỘP BÀI TRÙNG =====
+    let isSubmitting = false;
+    let hasSubmitted = false;
+
     // ===== THỜI GIAN LÀM BÀI =====
     let quizStartTime = null;
     let quizEndTime = null;
@@ -1011,27 +1024,54 @@ if(type === "midsegments") {
 
     function submitScore() {
         const status = document.getElementById('status-text');
-        if(SCRIPT_URL.includes("DÁN_LINK")) return alert("Chưa có link gửi điểm!");
-        
-        status.innerText = "Đang gửi...";
+        const submitBtn = document.getElementById('submit-btn');
+
+        if (SCRIPT_URL.includes("DÁN_LINK")) {
+            return alert("Chưa có link gửi điểm!");
+        }
+
+        // Nếu đang gửi hoặc đã gửi xong thì bỏ qua mọi lần nhấn tiếp theo
+        if (isSubmitting || hasSubmitted) return;
+
+        // Khóa nút NGAY LẬP TỨC trước khi gửi
+        isSubmitting = true;
+        submitBtn.disabled = true;
+        submitBtn.innerText = "ĐANG GỬI BÀI...";
+        status.innerText = "Đang gửi, em vui lòng chờ...";
+
         const payload = {
-    name: sName,
-    class: sClass, 
-    score: getScore(),
-    attempts: retry,
-    duration: formatDurationText(getElapsedSeconds()),
-    durationSeconds: getElapsedSeconds(),
-    quizId: "1_DonThuc"};
+            name: sName,
+            class: sClass,
+            score: getScore(),
+            attempts: retry,
+            duration: formatDurationText(getElapsedSeconds()),
+            durationSeconds: getElapsedSeconds(),
+            quizId: "1_DonThuc"
+        };
 
         fetch(SCRIPT_URL, {
-            method: 'POST', mode: 'no-cors',
+            method: 'POST',
+            mode: 'no-cors',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         }).then(() => {
+            isSubmitting = false;
+            hasSubmitted = true;
+
             status.innerText = "";
-            document.getElementById('thanks-container').innerText = "Em làm tốt lắm. Thầy/Cô đã nhận được bài của em";
-            document.getElementById('submit-btn').style.display = 'none';
-        }).catch(() => status.innerText = "Lỗi khi nộp bài!");
+            document.getElementById('thanks-container').innerText =
+                "✅ Em đã nộp bài. Thầy/Cô đã nhận được bài của em.";
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = "ĐÃ NỘP BÀI";
+        }).catch(() => {
+            isSubmitting = false;
+            hasSubmitted = false;
+
+            status.innerText = "Lỗi khi nộp bài! Em hãy thử lại.";
+            submitBtn.disabled = false;
+            submitBtn.innerText = "NỘP BÀI LÊN HỆ THỐNG";
+        });
     }
 
 
@@ -1061,6 +1101,15 @@ if(type === "midsegments") {
         current = 0; earnedUnits = 0; retry++;
         quizInProgress = true;
         leaveWarningPending = false;
+
+        // Đây là lượt làm bài mới nên cho phép nộp lại
+        isSubmitting = false;
+        hasSubmitted = false;
+        const submitBtn = document.getElementById('submit-btn');
+        submitBtn.disabled = false;
+        submitBtn.innerText = "NỘP BÀI LÊN HỆ THỐNG";
+        document.getElementById('status-text').innerText = "";
+
         quizStartTime = Date.now();
         quizEndTime = null;
         startTimer();
