@@ -792,6 +792,9 @@
   }
 ];
 
+    // ===== DỮ LIỆU BÀI LÀM SAU KHI ĐẢO ĐÁP ÁN =====
+    let quizDB = [];
+
     let current = 0, earnedUnits = 0, retry = 0;
     let sName = "", sClass = "";
     let quizInProgress = false;
@@ -805,6 +808,10 @@
     let quizStartTime = null;
     let quizEndTime = null;
     let timerInterval = null;
+
+    // ===== THỜI GIAN TỪNG CÂU =====
+    let questionStartedAt = null;
+    let questionTimes = [];
 
     function getElapsedSeconds() {
         if (!quizStartTime) return 0;
@@ -851,6 +858,58 @@
         }
     }
 
+    // ===== ĐẢO ĐÁP ÁN AN TOÀN =====
+    // Fisher-Yates: đảo vị trí đáp án nhưng vẫn xác định đúng đáp án chính xác.
+    function shuffleAnswersSafely(item) {
+        const copy = { ...item };
+
+        // Chỉ đảo câu trắc nghiệm A-B-C-D; câu Đúng/Sai giữ nguyên.
+        if (!Array.isArray(item.a) || item.isTF) {
+            if (Array.isArray(item.a)) copy.a = [...item.a];
+            if (Array.isArray(item.sub)) copy.sub = [...item.sub];
+            if (Array.isArray(item.ans)) copy.ans = [...item.ans];
+            return copy;
+        }
+
+        const choices = item.a.map((text, index) => ({
+            text,
+            isCorrect: index === item.c
+        }));
+
+        for (let i = choices.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [choices[i], choices[j]] = [choices[j], choices[i]];
+        }
+
+        copy.a = choices.map(choice => choice.text);
+        copy.c = choices.findIndex(choice => choice.isCorrect);
+        return copy;
+    }
+
+    function buildQuizData() {
+        quizDB = DB.map(item => shuffleAnswersSafely(item));
+    }
+
+    // ===== GHI THỜI GIAN TỪNG CÂU =====
+    function startQuestionTiming() {
+        questionStartedAt = Date.now();
+    }
+
+    function recordCurrentQuestionTime() {
+        if (questionStartedAt === null) return;
+        if (questionTimes[current] !== undefined) return;
+
+        const seconds = Math.max(1, Math.round((Date.now() - questionStartedAt) / 1000));
+        questionTimes[current] = seconds;
+        questionStartedAt = null;
+    }
+
+    function formatQuestionTimesForSheet() {
+        return questionTimes
+            .map((seconds, index) => `Câu ${index + 1}: ${seconds ?? 0} giây`)
+            .join(" | ");
+    }
+
     // Mỗi câu trắc nghiệm tương ứng 1 đơn vị điểm.
     // Điểm toàn bài luôn được quy đổi chính xác về thang 10.
     function getScore() {
@@ -880,6 +939,12 @@
         leaveWarningPending = false;
         quizStartTime = Date.now();
         quizEndTime = null;
+
+        // Mỗi lượt làm bài được đảo đáp án mới và ghi thời gian từng câu từ đầu
+        questionTimes = [];
+        questionStartedAt = null;
+        buildQuizData();
+
         startTimer();
         updateHeader();
         document.getElementById('start-screen').classList.remove('active');
@@ -935,7 +1000,7 @@ if(type === "midsegments") {
         return "";
     }
     function renderQuestion() {
-        const item = DB[current];
+        const item = quizDB[current];
         const opts = document.getElementById('options-area');
         document.getElementById('btn-next').style.display = 'none';
         document.getElementById('explain-box').style.display = 'none';
@@ -966,11 +1031,15 @@ if(type === "midsegments") {
             });
         }
         MathJax.typesetPromise();
+        startQuestionTiming();
     }
 
     function checkMC(idx, el) {
-        const item = DB[current];
+        const item = quizDB[current];
         const all = document.querySelectorAll('.option');
+
+        // Ghi thời gian từ lúc câu xuất hiện đến lúc học sinh chọn đáp án
+        recordCurrentQuestionTime();
         all.forEach(o => o.onclick = null);
         if(idx === item.c) {
             el.classList.add('correct'); playSnd('snd-correct'); earnedUnits += 1;
@@ -986,7 +1055,7 @@ if(type === "midsegments") {
     }
 
     function checkTF(rowIdx, choice, el) {
-        const item = DB[current];
+        const item = quizDB[current];
         const row = document.querySelector(`tr[data-row="${rowIdx}"]`);
         if(row.getAttribute('data-ans')) return;
         row.setAttribute('data-ans', 'true');
@@ -999,6 +1068,9 @@ if(type === "midsegments") {
         updateHeader();
 
         if(document.querySelectorAll('tr[data-ans="true"]').length === item.sub.length) {
+            // Câu Đúng/Sai: ghi thời gian khi học sinh hoàn tất tất cả các ý
+            recordCurrentQuestionTime();
+
             document.getElementById('explain-box').innerHTML = `<strong>Giải thích:</strong> ${item.e}`;
             document.getElementById('explain-box').style.display = 'block';
             document.getElementById('btn-next').style.display = 'block';
@@ -1008,7 +1080,7 @@ if(type === "midsegments") {
 
     function goNext() {
         current++;
-        if(current < DB.length) renderQuestion();
+        if(current < quizDB.length) renderQuestion();
         else {
             quizEndTime = Date.now();
             stopTimer();
@@ -1046,6 +1118,11 @@ if(type === "midsegments") {
             attempts: retry,
             duration: formatDurationText(getElapsedSeconds()),
             durationSeconds: getElapsedSeconds(),
+
+            // Thời gian từng câu để ghi về Google Sheet
+            questionTimes: formatQuestionTimesForSheet(),
+            questionTimesSeconds: JSON.stringify(questionTimes),
+
             quizId: "1_DonThuc"
         };
 
@@ -1112,6 +1189,12 @@ if(type === "midsegments") {
 
         quizStartTime = Date.now();
         quizEndTime = null;
+
+        // Lượt làm lại: đảo lại đáp án và ghi thời gian từng câu từ đầu
+        questionTimes = [];
+        questionStartedAt = null;
+        buildQuizData();
+
         startTimer();
         updateHeader();
         document.getElementById('result-screen').classList.remove('active');
